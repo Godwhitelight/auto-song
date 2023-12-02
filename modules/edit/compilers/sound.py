@@ -5,14 +5,15 @@ from moviepy.audio.io.AudioFileClip import AudioFileClip
 from pedalboard_native.io import AudioFile
 
 from modules.edit.compilers.compiler import Compiler
-from modules.edit.effects.audio.audio_effect import AudioEffect
 from modules.edit.effects.audio.moviepy_effect import MoviePyEffect
 from modules.edit.effects.audio.pedal_effect import PedalEffect
 from pedalboard import Pedalboard
 
+from modules.edit.effects.effect import Effect
+
 
 class SoundCompiler(Compiler):
-    def __init__(self, effects: List[AudioEffect], *args, **kwargs):
+    def __init__(self, effects: List[Effect], *args, **kwargs):
         super().__init__(effects, *args, **kwargs)
 
     def compile(self):
@@ -32,12 +33,10 @@ class SoundCompiler(Compiler):
             if isinstance(effect, MoviePyEffect):
                 clip = effect.edit(clip)
 
-        if 'VideoCompiler' in str(type(self)):
-            return clip
-
         # clip.close()
-        os.remove('output/pedal-' + self.filename)
         clip.write_audiofile('output/output-' + self.filename)
+        os.remove('output/pedal-' + self.filename)
+        return 'output/output-' + self.filename
 
 
 
